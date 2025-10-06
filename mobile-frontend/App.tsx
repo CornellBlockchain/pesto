@@ -1,20 +1,20 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { AuthProvider } from './src/hooks/useAuth';
+import { AptosProvider } from './src/hooks/useAptos';
+import { ContactsProvider } from './src/hooks/useContacts';
+import { AppNavigator } from './src/navigation/AppNavigator';
+import { theme } from './src/constants';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Hi!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthProvider>
+      <AptosProvider>
+        <ContactsProvider>
+          <StatusBar style="dark" backgroundColor={theme.colors.background.primary} />
+          <AppNavigator />
+        </ContactsProvider>
+      </AptosProvider>
+    </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
