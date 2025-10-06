@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, TextInput, Logo } from '../../components';
@@ -13,19 +15,18 @@ import { theme } from '../../constants';
 
 export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const { login, loginWithGoogle, isLoading } = useAuth();
 
   const handleEmailLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
       return;
     }
 
     try {
-      await login(email, password);
+      await login(email.trim());
     } catch (error) {
-      Alert.alert('Login Failed', 'Please check your credentials and try again');
+      Alert.alert('Login Failed', 'Please check your details and try again');
     }
   };
 
@@ -39,68 +40,66 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          {/* Logo */}
-          <View style={styles.logoContainer}>
-            <Logo size="large" />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            <View style={styles.logoContainer}>
+              <Logo size="hero" />
+            </View>
+
+            <Text style={styles.title}>Log In</Text>
+            <Text style={styles.subtitle}>Create an account or sign in</Text>
+
+            <View style={styles.fullWidth}>
+              <TextInput
+                placeholder="email@domain.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                leftIcon="mail"
+              />
+            </View>
+
+            <View style={styles.buttonGroup}>
+              <Button
+                title="Continue"
+                onPress={handleEmailLogin}
+                loading={isLoading}
+                fullWidth
+              />
+            </View>
+
+            <View style={styles.separator}>
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>or</Text>
+              <View style={styles.separatorLine} />
+            </View>
+
+            <View style={styles.buttonGroup}>
+              <Button
+                title="Continue with Google"
+                onPress={handleGoogleLogin}
+                variant="secondary"
+                icon="logo-google"
+                fullWidth
+                disabled={isLoading}
+              />
+            </View>
+
+            <Text style={styles.legalText}>
+              By clicking continue, you agree to our{' '}
+              <Text style={styles.linkText}>Terms of Service</Text> and{' '}
+              <Text style={styles.linkText}>Privacy Policy</Text>
+            </Text>
           </View>
-
-          {/* Title */}
-          <Text style={styles.title}>Log In</Text>
-          <Text style={styles.subtitle}>Create an account or sign in</Text>
-
-          {/* Email Input */}
-          <TextInput
-            placeholder="email@domain.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            leftIcon="mail"
-          />
-
-          {/* Password Input */}
-          <TextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            leftIcon="lock-closed"
-          />
-
-          {/* Continue Button */}
-          <Button
-            title="Continue"
-            onPress={handleEmailLogin}
-            loading={isLoading}
-            fullWidth
-          />
-
-          {/* Separator */}
-          <View style={styles.separator}>
-            <View style={styles.separatorLine} />
-            <Text style={styles.separatorText}>or</Text>
-            <View style={styles.separatorLine} />
-          </View>
-
-          {/* Google Login Button */}
-          <Button
-            title="Continue with Google"
-            onPress={handleGoogleLogin}
-            variant="secondary"
-            icon="logo-google"
-            fullWidth
-            disabled={isLoading}
-          />
-
-          {/* Legal Text */}
-          <Text style={styles.legalText}>
-            By clicking continue, you agree to our{' '}
-            <Text style={styles.linkText}>Terms of Service</Text> and{' '}
-            <Text style={styles.linkText}>Privacy Policy</Text>
-          </Text>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -110,12 +109,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background.primary,
   },
+  flex: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: theme.spacing.screen.horizontal,
+    paddingTop: theme.spacing['6xl'],
+    paddingBottom: theme.spacing['4xl'],
   },
   content: {
+    flex: 1,
     alignItems: 'center',
   },
   logoContainer: {
@@ -132,10 +136,18 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing['3xl'],
     textAlign: 'center',
   },
+  fullWidth: {
+    width: '100%',
+  },
+  buttonGroup: {
+    width: '100%',
+    marginTop: theme.spacing.lg,
+  },
   separator: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: theme.spacing['2xl'],
+    marginTop: theme.spacing['4xl'],
+    marginBottom: theme.spacing['2xl'],
     width: '100%',
   },
   separatorLine: {

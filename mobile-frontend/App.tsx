@@ -5,14 +5,17 @@ import { AptosProvider } from './src/hooks/useAptos';
 import { ContactsProvider } from './src/hooks/useContacts';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { theme } from './src/constants';
+import { DemoDataProvider } from './src/hooks/useDemoData';
 
 export default function App() {
   return (
     <AuthProvider>
       <AptosProvider>
         <ContactsProvider>
-          <StatusBar style="dark" backgroundColor={theme.colors.background.primary} />
-          <AppNavigator />
+          <DemoDataProvider>
+            <StatusBar style="dark" backgroundColor={theme.colors.background.primary} />
+            <AppNavigator />
+          </DemoDataProvider>
         </ContactsProvider>
       </AptosProvider>
     </AuthProvider>

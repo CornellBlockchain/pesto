@@ -7,7 +7,7 @@ import {
 import { theme } from '../../constants';
 
 interface LogoProps {
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'hero';
   showText?: boolean;
   color?: string;
 }
@@ -17,8 +17,31 @@ export const Logo: React.FC<LogoProps> = ({
   showText = true,
   color = theme.colors.primary.green,
 }) => {
-  const sizeValue = size === 'small' ? 32 : size === 'large' ? 80 : 48;
-  const fontSize = size === 'small' ? 10 : size === 'large' ? 16 : 12;
+  const sizeValue = (() => {
+    switch (size) {
+      case 'small':
+        return 32;
+      case 'large':
+        return 80;
+      case 'hero':
+        return 112;
+      default:
+        return 48;
+    }
+  })();
+
+  const fontSize = (() => {
+    switch (size) {
+      case 'small':
+        return 10;
+      case 'large':
+        return 16;
+      case 'hero':
+        return 18;
+      default:
+        return 12;
+    }
+  })();
 
   return (
     <View style={styles.container}>
@@ -52,4 +75,3 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 });
-

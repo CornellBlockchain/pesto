@@ -23,10 +23,10 @@ export const MainNavigator: React.FC = () => {
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'Assets':
-              iconName = focused ? 'wallet' : 'wallet-outline';
+              iconName = focused ? 'remove-circle' : 'remove-circle-outline';
               break;
             case 'History':
-              iconName = focused ? 'time' : 'time-outline';
+              iconName = focused ? 'cart' : 'cart-outline';
               break;
             case 'Profile':
               iconName = focused ? 'person' : 'person-outline';
@@ -39,17 +39,14 @@ export const MainNavigator: React.FC = () => {
         },
         tabBarActiveTintColor: theme.colors.text.primary,
         tabBarInactiveTintColor: theme.colors.text.tertiary,
+        tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: theme.colors.background.primary,
           borderTopColor: theme.colors.border.light,
           borderTopWidth: 1,
           height: theme.spacing.component.navigation.tabBarHeight,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          paddingBottom: 16,
+          paddingTop: 12,
         },
       })}
     >
@@ -76,4 +73,3 @@ export const MainNavigator: React.FC = () => {
     </Tab.Navigator>
   );
 };
-
