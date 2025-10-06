@@ -1,45 +1,15 @@
 import React from 'react';
-<<<<<<< HEAD
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-=======
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
->>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
 import { theme } from '../../constants';
-import { useDemoData } from '../../hooks/useDemoData';
 
 export const ProfileScreen: React.FC = () => {
-  const { friends } = useDemoData();
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.headerRow}>
-          <Text style={styles.headerTitle}>Top profile</Text>
-          <TouchableOpacity style={styles.chevronButton} activeOpacity={0.7}>
-            <Ionicons name="chevron-forward" size={18} color={theme.colors.text.secondary} />
-          </TouchableOpacity>
-        </View>
-
-        {friends.map(friend => (
-          <View key={friend.id} style={styles.profileRow}>
-            <Image source={{ uri: friend.avatar }} style={styles.avatar} />
-            <View style={styles.profileInfo}>
-              <Text style={styles.name}>{friend.name}</Text>
-              <Text style={styles.handle}>{friend.username}</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+      <View style={styles.content}>
+        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.subtitle}>Your profile information will appear here</Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -49,53 +19,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background.primary,
   },
-  scrollContent: {
-    paddingTop: theme.spacing['3xl'],
-    paddingBottom: theme.spacing['6xl'],
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: theme.spacing.screen.horizontal,
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing['2xl'],
-  },
-  headerTitle: {
-    ...theme.typography.textStyles.h3,
+  title: {
+    ...theme.typography.textStyles.h1,
     color: theme.colors.text.primary,
+    marginBottom: theme.spacing.lg,
   },
-  chevronButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.background.secondary,
-  },
-  profileRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border.light,
-  },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    marginRight: theme.spacing.md,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  name: {
-    ...theme.typography.textStyles.transactionName,
-    color: theme.colors.text.primary,
-  },
-  handle: {
-    ...theme.typography.textStyles.transactionDescription,
+  subtitle: {
+    ...theme.typography.textStyles.body,
     color: theme.colors.text.tertiary,
-    marginTop: 4,
+    textAlign: 'center',
   },
 });
 

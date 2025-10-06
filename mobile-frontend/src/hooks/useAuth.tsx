@@ -2,15 +2,10 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthState, User } from '../types';
 import { GoogleAuthService } from '../services/auth/GoogleAuthService';
-<<<<<<< HEAD
 import { ConfigChecker } from '../utils';
-=======
-import { ConfigChecker } from '../utils/configChecker';
-import { MockDatabase, DemoUserRecord } from '../services/db/mockDb';
->>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
 
 interface AuthContextType extends AuthState {
-  login: (email: string, password?: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -33,19 +28,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const googleAuthService = GoogleAuthService.getInstance();
 
-  const mapDemoUser = (record: DemoUserRecord): User => ({
-    id: record.id,
-    email: record.email,
-    name: record.name,
-    avatar: record.avatar,
-    aptosAddress: record.aptosAddress,
-    createdAt: new Date(record.createdAt),
-    updatedAt: new Date(record.updatedAt),
-  });
-
   useEffect(() => {
     initializeAuth();
-    // Check Google OAuth configuration on startup
     try {
       ConfigChecker.logConfigStatus();
     } catch (error) {
@@ -55,7 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const initializeAuth = async () => {
     try {
-      // Check if user is already logged in
       const userData = await AsyncStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
@@ -66,43 +49,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           error: null,
         });
       } else {
-        const demoUser = await MockDatabase.getDefaultUser();
-        const mappedUser = mapDemoUser(demoUser);
-        await AsyncStorage.setItem('user', JSON.stringify(mappedUser));
-        setAuthState({
-          user: mappedUser,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
+        setAuthState(prev => ({ ...prev, isLoading: false }));
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
-      setAuthState(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: 'Failed to initialize authentication' 
+      setAuthState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to initialize authentication',
       }));
     }
   };
 
-  const login = async (email: string, password?: string) => {
+  const login = async (email: string, password: string) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      const demoUser = await MockDatabase.findUserByEmail(email);
-      if (!demoUser) {
-        throw new Error('User not found');
-      }
-
-      if (demoUser.password && password && password !== demoUser.password) {
-        throw new Error('Invalid credentials');
-      }
-
-      const user = mapDemoUser(demoUser);
+      const user: User = {
+        id: '1',
+        email,
+        name: email.split('@')[0],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
-      
+
       setAuthState({
         user,
         isAuthenticated: true,
@@ -123,15 +95,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // Use the Google Auth Service to sign in
       const googleUser = await googleAuthService.signIn();
-      
-      // Convert Google user to our app's User type
       const user: User = googleAuthService.convertToAppUser(googleUser);
 
-      // Store user data locally
       await AsyncStorage.setItem('user', JSON.stringify(user));
-      
+
       setAuthState({
         user,
         isAuthenticated: true,
@@ -153,9 +121,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      console.warn('Signup is disabled in the demo build. Using existing demo users.');
-      const demoUser = await MockDatabase.getDefaultUser();
-      const user = mapDemoUser({ ...demoUser, name, email });
+      const user: User = {
+        id: Date.now().toString(),
+        email,
+        name,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
 
@@ -179,16 +151,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true }));
 
-      // Sign out from Google if user was signed in with Google
       try {
         await googleAuthService.signOut();
       } catch (error) {
-        console.log('Google sign-out failed (user might not have been signed in with Google):', error);
+        console.log('Google sign-out failed:', error);
       }
 
-      // Clear local storage
       await AsyncStorage.removeItem('user');
-      
+
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -209,9 +179,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // TODO: Implement actual forgot password logic with your backend
       console.log('Forgot password for:', email);
-      
+
       setAuthState(prev => ({ ...prev, isLoading: false }));
     } catch (error) {
       setAuthState(prev => ({
