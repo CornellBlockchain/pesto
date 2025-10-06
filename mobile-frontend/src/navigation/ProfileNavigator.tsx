@@ -7,6 +7,7 @@ import { FriendsScreen } from '../screens/profile/FriendsScreen';
 import { AddFriendScreen } from '../screens/profile/AddFriendScreen';
 import { FriendDetailScreen } from '../screens/profile/FriendDetailScreen';
 import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
+import { theme } from '../constants';
 
 const Stack = createStackNavigator<ProfileStackParamList>();
 
@@ -16,7 +17,16 @@ export const ProfileNavigator: React.FC = () => {
       initialRouteName="ProfileScreen"
       screenOptions={{
         headerShown: false,
-        cardStyle: { backgroundColor: '#FFFFFF' },
+        cardStyle: { backgroundColor: theme.colors.background.primary },
+        headerStyle: {
+          backgroundColor: theme.colors.background.primary,
+          shadowColor: 'transparent',
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          ...theme.typography.textStyles.h4,
+          color: theme.colors.text.primary,
+        },
       }}
     >
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
@@ -63,4 +73,3 @@ export const ProfileNavigator: React.FC = () => {
     </Stack.Navigator>
   );
 };
-

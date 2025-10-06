@@ -4,85 +4,97 @@
  */
 
 export const colors = {
-  // Primary Colors
+  // Brand palette derived from Figma
   primary: {
-    green: '#2ECC71', // Pesto brand green
-    black: '#000000',
+    green: '#00C46F',
+    black: '#111111',
     white: '#FFFFFF',
   },
 
-  // Background Colors
+  neutral: {
+    900: '#111111',
+    700: '#3C3C43',
+    500: '#8E8E93',
+    400: '#A1A1A8',
+    300: '#C7C7CC',
+    200: '#E5E5EA',
+    100: '#F2F2F7',
+    50: '#FAFAFD',
+  },
+
+  // Background layers
   background: {
     primary: '#FFFFFF',
-    secondary: '#F8F9FA',
-    dark: '#363636', // Status bar background
-    card: '#FFFFFF',
+    secondary: '#F7F7FA',
+    elevated: '#FFFFFF',
+    screen: '#F5F5F7',
+    inverse: '#111111',
   },
 
-  // Text Colors
+  // Copy colors
   text: {
-    primary: '#000000',
-    secondary: '#333333',
-    tertiary: '#4A4A4A',
-    placeholder: '#AAAAAA',
-    light: '#BBBBBB',
+    primary: '#111111',
+    secondary: '#3C3C43',
+    tertiary: '#6C6C7A',
+    placeholder: '#9A9AA1',
+    light: '#A1A1A8',
     white: '#FFFFFF',
   },
 
-  // Accent Colors
   accent: {
-    blue: '#007AFF', // USDC blue
-    green: '#00C851', // USDT green
-    orange: '#FF9500', // wBTC orange
-    red: '#FF3B30', // Error states, dots
-    gold: '#FFD700', // Bitcoin gold
+    blue: '#0A84FF',
+    green: '#30D158',
+    orange: '#FF9F0A',
+    red: '#FF3B30',
+    yellow: '#FFD60A',
   },
 
-  // Button Colors
   button: {
-    primary: '#000000',
+    primary: '#111111',
     primaryText: '#FFFFFF',
-    secondary: '#F2F2F2',
-    secondaryText: '#000000',
-    google: '#F2F2F2',
-    googleText: '#000000',
-    disabled: '#E0E0E0',
-    disabledText: '#9E9E9E',
+    secondary: '#F2F2F7',
+    secondaryText: '#111111',
+    ghost: 'transparent',
+    ghostText: '#111111',
+    google: '#F7F7FA',
+    googleText: '#1F1F24',
+    disabled: '#D8D8DC',
+    disabledText: '#A1A1A8',
   },
 
-  // Status Colors
   status: {
-    success: '#00C851',
+    success: '#30D158',
     error: '#FF3B30',
-    warning: '#FF9500',
-    info: '#007AFF',
+    warning: '#FF9F0A',
+    info: '#0A84FF',
   },
 
-  // Border Colors
   border: {
-    light: '#E0E0E0',
-    medium: '#CCCCCC',
-    dark: '#999999',
+    light: '#E5E5EA',
+    medium: '#C7C7CC',
+    dark: '#8E8E93',
   },
 
-  // Shadow Colors
   shadow: {
-    light: 'rgba(0, 0, 0, 0.1)',
-    medium: 'rgba(0, 0, 0, 0.2)',
-    dark: 'rgba(0, 0, 0, 0.3)',
+    light: 'rgba(17, 17, 17, 0.08)',
+    medium: 'rgba(17, 17, 17, 0.14)',
+    dark: 'rgba(17, 17, 17, 0.24)',
   },
 
-  // Crypto Asset Colors
+  overlay: {
+    scrim: 'rgba(0, 0, 0, 0.4)',
+    scrimStrong: 'rgba(0, 0, 0, 0.6)',
+  },
+
   crypto: {
-    apt: '#007AFF', // Aptos blue
-    usdc: '#2775CA', // USDC blue
-    usdt: '#26A17B', // USDT green
-    wbtc: '#F7931A', // Bitcoin orange
-    kapt: '#2ECC71', // Kofi Aptos green
-    amapt: '#007AFF', // Amnis Aptos blue
+    apt: '#0A84FF',
+    usdc: '#2775CA',
+    usdt: '#26A17B',
+    wbtc: '#F7931A',
+    kapt: '#00C46F',
+    amapt: '#0D6EFD',
   },
 } as const;
 
 export type ColorKey = keyof typeof colors;
 export type ColorValue = typeof colors[ColorKey];
-

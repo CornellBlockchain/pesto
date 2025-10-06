@@ -4,6 +4,7 @@ import { AssetsStackParamList } from '../types';
 import { AssetsScreen } from '../screens/main/AssetsScreen';
 import { AssetDetailScreen } from '../screens/main/AssetDetailScreen';
 import { AddAssetScreen } from '../screens/main/AddAssetScreen';
+import { theme } from '../constants';
 
 const Stack = createStackNavigator<AssetsStackParamList>();
 
@@ -13,7 +14,16 @@ export const AssetsNavigator: React.FC = () => {
       initialRouteName="AssetsScreen"
       screenOptions={{
         headerShown: false,
-        cardStyle: { backgroundColor: '#FFFFFF' },
+        cardStyle: { backgroundColor: theme.colors.background.primary },
+        headerStyle: {
+          backgroundColor: theme.colors.background.primary,
+          shadowColor: 'transparent',
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          ...theme.typography.textStyles.h4,
+          color: theme.colors.text.primary,
+        },
       }}
     >
       <Stack.Screen name="AssetsScreen" component={AssetsScreen} />
@@ -36,4 +46,3 @@ export const AssetsNavigator: React.FC = () => {
     </Stack.Navigator>
   );
 };
-

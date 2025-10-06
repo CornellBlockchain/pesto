@@ -13,7 +13,7 @@ export const Card: React.FC<CardProps> = ({
   padding = theme.spacing.component.card.padding,
   margin = theme.spacing.component.card.marginVertical,
   borderRadius = theme.spacing.dimensions.card.borderRadius,
-  backgroundColor = theme.colors.background.card,
+  backgroundColor = theme.colors.background.primary,
   shadow = true,
   onPress,
 }) => {
@@ -62,4 +62,3 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
-

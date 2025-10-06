@@ -4,7 +4,7 @@
  */
 
 export const typography = {
-  // Font Families
+  // Font families (system fallbacks until custom fonts are added)
   fontFamily: {
     regular: 'System',
     medium: 'System',
@@ -12,20 +12,18 @@ export const typography = {
     bold: 'System',
   },
 
-  // Font Sizes
   fontSize: {
     xs: 12,
     sm: 14,
-    base: 16,
+    md: 16,
     lg: 18,
     xl: 20,
     '2xl': 24,
     '3xl': 28,
     '4xl': 32,
-    '5xl': 36,
+    '5xl': 40,
   },
 
-  // Font Weights
   fontWeight: {
     regular: '400' as const,
     medium: '500' as const,
@@ -33,39 +31,39 @@ export const typography = {
     bold: '700' as const,
   },
 
-  // Line Heights
   lineHeight: {
-    tight: 1.2,
+    tight: 1.1,
     normal: 1.4,
     relaxed: 1.6,
     loose: 1.8,
   },
 
-  // Text Styles (Predefined combinations)
   textStyles: {
-    // Headers
     h1: {
-      fontSize: 28,
+      fontSize: 32,
       fontWeight: '700' as const,
       lineHeight: 1.2,
     },
     h2: {
-      fontSize: 24,
+      fontSize: 28,
       fontWeight: '700' as const,
-      lineHeight: 1.3,
+      lineHeight: 1.25,
     },
     h3: {
+      fontSize: 24,
+      fontWeight: '600' as const,
+      lineHeight: 1.3,
+    },
+    h4: {
       fontSize: 20,
       fontWeight: '600' as const,
       lineHeight: 1.4,
     },
-    h4: {
+    subtitle: {
       fontSize: 18,
-      fontWeight: '600' as const,
+      fontWeight: '500' as const,
       lineHeight: 1.4,
     },
-
-    // Body Text
     body: {
       fontSize: 16,
       fontWeight: '400' as const,
@@ -81,8 +79,6 @@ export const typography = {
       fontWeight: '400' as const,
       lineHeight: 1.5,
     },
-
-    // Captions and Small Text
     caption: {
       fontSize: 14,
       fontWeight: '400' as const,
@@ -98,8 +94,6 @@ export const typography = {
       fontWeight: '400' as const,
       lineHeight: 1.3,
     },
-
-    // Button Text
     button: {
       fontSize: 16,
       fontWeight: '600' as const,
@@ -110,8 +104,6 @@ export const typography = {
       fontWeight: '600' as const,
       lineHeight: 1.2,
     },
-
-    // Input Text
     input: {
       fontSize: 16,
       fontWeight: '400' as const,
@@ -122,17 +114,13 @@ export const typography = {
       fontWeight: '400' as const,
       lineHeight: 1.4,
     },
-
-    // Status Bar
     statusBar: {
       fontSize: 17,
       fontWeight: '600' as const,
       lineHeight: 1.2,
     },
-
-    // Asset Values
     assetValue: {
-      fontSize: 24,
+      fontSize: 28,
       fontWeight: '700' as const,
       lineHeight: 1.2,
     },
@@ -141,8 +129,6 @@ export const typography = {
       fontWeight: '700' as const,
       lineHeight: 1.1,
     },
-
-    // Transaction Text
     transactionName: {
       fontSize: 16,
       fontWeight: '600' as const,
@@ -154,7 +140,7 @@ export const typography = {
       lineHeight: 1.4,
     },
     transactionTime: {
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: '400' as const,
       lineHeight: 1.3,
     },
@@ -163,4 +149,3 @@ export const typography = {
 
 export type TypographyKey = keyof typeof typography;
 export type TextStyleKey = keyof typeof typography.textStyles;
-

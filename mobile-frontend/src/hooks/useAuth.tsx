@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthState, User } from '../types';
 import { GoogleAuthService } from '../services/auth/GoogleAuthService';
-import { ConfigChecker } from '../utils/configChecker';
+import { ConfigChecker } from '../utils';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
@@ -228,4 +228,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

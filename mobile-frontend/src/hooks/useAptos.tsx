@@ -1,7 +1,17 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Account, aptosService } from '../services/aptos/AptosService';
+import { aptosService } from '../services/aptos/AptosService';
+import type { Account } from '../services/aptos/AptosService';
 import { Asset, Transaction, AptosFriend } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContacts } from './useContacts';
+
+const getAccountPrivateKeyHex = (acct: Account): string | null => {
+  const maybe = acct as { privateKey?: { toString: () => string } };
+  if (maybe.privateKey && typeof maybe.privateKey.toString === 'function') {
+    return maybe.privateKey.toString();
+  }
+  return null;
+};
 
 interface AptosContextType {
   account: Account | null;
@@ -26,6 +36,7 @@ interface AptosContextType {
   
   // Utility methods
   isValidAddress: (address: string) => boolean;
+  canSendToAddress: (address: string) => boolean;
 }
 
 const AptosContext = createContext<AptosContextType | undefined>(undefined);
@@ -40,6 +51,7 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { canSendMoney, getFriendByAddress } = useContacts();
 
   useEffect(() => {
     loadStoredAccount();
@@ -67,8 +79,14 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
 
   const storeAccount = async (account: Account) => {
     try {
+      const privateKey = getAccountPrivateKeyHex(account);
+      if (!privateKey) {
+        console.warn('Unable to persist Aptos account: private key not accessible');
+        return;
+      }
+
       const accountData = {
-        privateKey: account.privateKey.toString(),
+        privateKey,
         address: account.accountAddress.toString(),
       };
       await AsyncStorage.setItem('aptosAccount', JSON.stringify(accountData));
@@ -182,19 +200,32 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
         25
       );
 
-      const transactionList: Transaction[] = aptosTransactions.map((tx: any) => ({
-        id: tx.hash,
-        type: tx.payload.type === 'entry_function_payload' && 
-              tx.payload.function.includes('transfer') ? 'send' : 'receive',
-        amount: tx.payload.arguments?.[1] || 0,
-        asset: 'APT', // Default to APT for now
-        from: tx.sender,
-        to: tx.payload.arguments?.[0] || '',
-        status: tx.success ? 'completed' : 'failed',
-        timestamp: new Date(parseInt(tx.timestamp) / 1000),
-        hash: tx.hash,
-        fee: tx.gas_used * tx.gas_unit_price,
-      }));
+      const transactionList: Transaction[] = aptosTransactions
+        .filter((tx: any) => tx?.payload && tx?.payload?.type === 'entry_function_payload')
+        .map((tx: any) => {
+          const [recipient, rawAmount] = Array.isArray(tx.payload.arguments)
+            ? tx.payload.arguments
+            : [undefined, 0];
+
+          const amountOctas = Number(rawAmount ?? 0);
+          const amountApt = amountOctas / 100000000;
+          const senderAddress = (tx.sender || '').toLowerCase();
+          const accountAddress = account.accountAddress.toString().toLowerCase();
+          const isSender = senderAddress === accountAddress;
+
+          return {
+            id: tx.hash ?? `${tx.version}`,
+            type: isSender ? 'send' : 'receive',
+            amount: amountApt,
+            asset: 'APT',
+            from: tx.sender,
+            to: typeof recipient === 'string' ? recipient : '',
+            status: tx.success ? 'completed' : 'failed',
+            timestamp: new Date(Number(tx.timestamp ?? 0) / 1000),
+            hash: tx.hash,
+            fee: Number(tx.gas_used ?? 0) * Number(tx.gas_unit_price ?? 0),
+          };
+        });
 
       setTransactions(transactionList);
     } catch (error) {
@@ -218,10 +249,21 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
+      if (!canSendMoney(friend.aptosAddress)) {
+        throw new Error('Recipient must be part of your verified network.');
+      }
+
+      const resolvedFriend = getFriendByAddress(friend.aptosAddress) ?? friend;
+      const amountInOctas = Math.round(amount * 100000000);
+
+      if (amountInOctas <= 0) {
+        throw new Error('Amount must be greater than zero.');
+      }
+
       const transaction = await aptosService.createSendMoneyTransaction(
         account,
-        friend,
-        amount * 100000000, // Convert to octas
+        resolvedFriend,
+        amountInOctas,
         message
       );
 
@@ -253,6 +295,10 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
     return aptosService.isValidAddress(address);
   };
 
+  const canSendToAddress = (address: string): boolean => {
+    return canSendMoney(address);
+  };
+
   const value: AptosContextType = {
     account,
     assets,
@@ -268,6 +314,7 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
     sendMoney,
     getTransaction,
     isValidAddress,
+    canSendToAddress,
   };
 
   return (
@@ -307,4 +354,3 @@ function extractTokenInfo(coinType: string): { symbol: string; name: string; dec
     decimals: 8,
   };
 }
-

@@ -1,3 +1,4 @@
+import './src/setup/polyfills';
 import { registerRootComponent } from 'expo';
 
 import App from './App';

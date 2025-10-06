@@ -5,6 +5,7 @@ import { HomeScreen } from '../screens/main/HomeScreen';
 import { PayRequestScreen } from '../screens/main/PayRequestScreen';
 import { SendMoneyScreen } from '../screens/main/SendMoneyScreen';
 import { RequestMoneyScreen } from '../screens/main/RequestMoneyScreen';
+import { theme } from '../constants';
 
 const Stack = createStackNavigator<HomeStackParamList>();
 
@@ -14,7 +15,16 @@ export const HomeNavigator: React.FC = () => {
       initialRouteName="HomeScreen"
       screenOptions={{
         headerShown: false,
-        cardStyle: { backgroundColor: '#FFFFFF' },
+        cardStyle: { backgroundColor: theme.colors.background.primary },
+        headerStyle: {
+          backgroundColor: theme.colors.background.primary,
+          shadowColor: 'transparent',
+        },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: {
+          ...theme.typography.textStyles.h4,
+          color: theme.colors.text.primary,
+        },
       }}
     >
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
@@ -45,4 +55,3 @@ export const HomeNavigator: React.FC = () => {
     </Stack.Navigator>
   );
 };
-

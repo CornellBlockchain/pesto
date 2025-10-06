@@ -151,7 +151,7 @@ export interface InputProps {
   placeholder?: string;
   value: string;
   onChangeText: (text: string) => void;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'decimal-pad';
   secureTextEntry?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
@@ -261,4 +261,3 @@ export interface AppConfig {
   enableBiometrics: boolean;
   enableNotifications: boolean;
 }
-
