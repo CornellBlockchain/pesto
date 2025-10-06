@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AptosFriend, Contact } from '../types';
 import { aptosService } from '../services/aptos/AptosService';
+import { MockDatabase } from '../services/db/mockDb';
 
 interface ContactsContextType {
   friends: AptosFriend[];
@@ -52,6 +53,24 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({ children }) 
         AsyncStorage.getItem('contacts'),
       ]);
 
+      const resolveUserId = async (): Promise<string> => {
+        const storedUserRaw = await AsyncStorage.getItem('user');
+        if (storedUserRaw) {
+          try {
+            const parsed = JSON.parse(storedUserRaw);
+            if (parsed?.id) {
+              return parsed.id;
+            }
+          } catch (error) {
+            console.warn('Failed to parse stored user for contacts seeding:', error);
+          }
+        }
+        const demoUser = await MockDatabase.getDefaultUser();
+        return demoUser.id;
+      };
+
+      const userId = await resolveUserId();
+
       if (storedFriends) {
         const friendsData = JSON.parse(storedFriends);
         setFriends(friendsData.map((friend: any) => ({
@@ -59,6 +78,10 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({ children }) 
           createdAt: new Date(friend.createdAt),
           lastTransactionDate: friend.lastTransactionDate ? new Date(friend.lastTransactionDate) : undefined,
         })));
+      } else {
+        const seededFriends = await MockDatabase.getFriendsForUser(userId);
+        setFriends(seededFriends);
+        await storeFriends(seededFriends);
       }
 
       if (storedContacts) {
@@ -67,6 +90,10 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({ children }) 
           ...contact,
           lastSeen: contact.lastSeen ? new Date(contact.lastSeen) : undefined,
         })));
+      } else {
+        const seededContacts = await MockDatabase.getContactsForUser(userId);
+        setContacts(seededContacts);
+        await storeContacts(seededContacts);
       }
     } catch (error) {
       console.error('Error loading stored data:', error);
@@ -282,4 +309,3 @@ export const useContacts = (): ContactsContextType => {
   }
   return context;
 };
-

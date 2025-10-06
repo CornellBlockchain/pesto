@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+<<<<<<< HEAD
 import { aptosService } from '../services/aptos/AptosService';
 import type { Account } from '../services/aptos/AptosService';
+=======
+import { Account, aptosService, NetworkInfo } from '../services/aptos/AptosService';
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
 import { Asset, Transaction, AptosFriend } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContacts } from './useContacts';
@@ -17,6 +21,8 @@ interface AptosContextType {
   account: Account | null;
   assets: Asset[];
   transactions: Transaction[];
+  networkInfo: NetworkInfo | null;
+  aptUsdPrice: number | null;
   isLoading: boolean;
   error: string | null;
   
@@ -36,7 +42,12 @@ interface AptosContextType {
   
   // Utility methods
   isValidAddress: (address: string) => boolean;
+<<<<<<< HEAD
   canSendToAddress: (address: string) => boolean;
+=======
+  refreshNetwork: () => Promise<void>;
+  refreshMarketData: () => Promise<void>;
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
 }
 
 const AptosContext = createContext<AptosContextType | undefined>(undefined);
@@ -49,12 +60,16 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
   const [account, setAccount] = useState<Account | null>(null);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
+  const [aptUsdPrice, setAptUsdPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { canSendMoney, getFriendByAddress } = useContacts();
 
   useEffect(() => {
     loadStoredAccount();
+    refreshNetwork();
+    refreshMarketData();
   }, []);
 
   useEffect(() => {
@@ -124,7 +139,7 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
       const resources = await aptosService.getAccountResources(account.accountAddress.toString());
       
       const assetList: Asset[] = [];
-      
+
       // Add APT (native token)
       const aptBalance = await aptosService.getAccountBalance(account.accountAddress.toString());
       if (aptBalance > 0) {
@@ -134,7 +149,7 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
           name: 'Aptos',
           icon: 'apt',
           balance: aptBalance / 100000000, // Convert from octas
-          value: 4.51, // This should come from a price API
+          value: aptUsdPrice ?? 0,
           change24h: 0.12,
           changePercent: 12,
           decimals: 8,
@@ -246,6 +261,7 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
     }
 
     try {
+<<<<<<< HEAD
       setIsLoading(true);
       setError(null);
 
@@ -273,12 +289,13 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
       await Promise.all([refreshAssets(), refreshTransactions()]);
       
       return hash;
+=======
+      throw new Error('Sending funds is disabled in this demo build.');
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
     } catch (error) {
       console.error('Error sending money:', error);
       setError('Failed to send money');
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -295,14 +312,44 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
     return aptosService.isValidAddress(address);
   };
 
+<<<<<<< HEAD
   const canSendToAddress = (address: string): boolean => {
     return canSendMoney(address);
+=======
+  const refreshNetwork = async () => {
+    try {
+      const info = await aptosService.getNetworkInfo();
+      setNetworkInfo(info);
+    } catch (networkError) {
+      console.error('Failed to refresh network info:', networkError);
+    }
+  };
+
+  const refreshMarketData = async () => {
+    try {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=aptos&vs_currencies=usd'
+      );
+      if (!response.ok) {
+        throw new Error(`Price API failed: ${response.status}`);
+      }
+      const data = await response.json();
+      const price = data?.aptos?.usd;
+      if (typeof price === 'number') {
+        setAptUsdPrice(price);
+      }
+    } catch (marketError) {
+      console.error('Failed to refresh market data:', marketError);
+    }
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
   };
 
   const value: AptosContextType = {
     account,
     assets,
     transactions,
+    networkInfo,
+    aptUsdPrice,
     isLoading,
     error,
     generateAccount,
@@ -314,7 +361,12 @@ export const AptosProvider: React.FC<AptosProviderProps> = ({ children }) => {
     sendMoney,
     getTransaction,
     isValidAddress,
+<<<<<<< HEAD
     canSendToAddress,
+=======
+    refreshNetwork,
+    refreshMarketData,
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
   };
 
   return (

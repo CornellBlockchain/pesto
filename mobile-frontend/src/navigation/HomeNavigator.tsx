@@ -32,8 +32,7 @@ export const HomeNavigator: React.FC = () => {
         name="PayRequest" 
         component={PayRequestScreen}
         options={{
-          headerShown: true,
-          title: 'Pay/Request',
+          headerShown: false,
         }}
       />
       <Stack.Screen 

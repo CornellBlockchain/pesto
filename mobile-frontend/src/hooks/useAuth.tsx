@@ -2,10 +2,15 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthState, User } from '../types';
 import { GoogleAuthService } from '../services/auth/GoogleAuthService';
+<<<<<<< HEAD
 import { ConfigChecker } from '../utils';
+=======
+import { ConfigChecker } from '../utils/configChecker';
+import { MockDatabase, DemoUserRecord } from '../services/db/mockDb';
+>>>>>>> 7250a99f00865d414730225e01c89ad1ec5dc9e0
 
 interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -27,6 +32,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   const googleAuthService = GoogleAuthService.getInstance();
+
+  const mapDemoUser = (record: DemoUserRecord): User => ({
+    id: record.id,
+    email: record.email,
+    name: record.name,
+    avatar: record.avatar,
+    aptosAddress: record.aptosAddress,
+    createdAt: new Date(record.createdAt),
+    updatedAt: new Date(record.updatedAt),
+  });
 
   useEffect(() => {
     initializeAuth();
@@ -51,7 +66,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           error: null,
         });
       } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
+        const demoUser = await MockDatabase.getDefaultUser();
+        const mappedUser = mapDemoUser(demoUser);
+        await AsyncStorage.setItem('user', JSON.stringify(mappedUser));
+        setAuthState({
+          user: mappedUser,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
@@ -63,19 +86,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password?: string) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // TODO: Implement actual login logic with your backend
-      // For now, we'll simulate a successful login
-      const user: User = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      const demoUser = await MockDatabase.findUserByEmail(email);
+      if (!demoUser) {
+        throw new Error('User not found');
+      }
+
+      if (demoUser.password && password && password !== demoUser.password) {
+        throw new Error('Invalid credentials');
+      }
+
+      const user = mapDemoUser(demoUser);
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
       
@@ -129,18 +153,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // TODO: Implement actual signup logic with your backend
-      // For now, we'll simulate a successful signup
-      const user: User = {
-        id: Date.now().toString(),
-        email,
-        name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      console.warn('Signup is disabled in the demo build. Using existing demo users.');
+      const demoUser = await MockDatabase.getDefaultUser();
+      const user = mapDemoUser({ ...demoUser, name, email });
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
-      
+
       setAuthState({
         user,
         isAuthenticated: true,
